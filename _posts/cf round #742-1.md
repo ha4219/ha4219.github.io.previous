@@ -1,0 +1,411 @@
+```
+---
+layout: post
+title:  "cf rounde #742 업솔빙 1/2"
+date:   2021-09-06 00:00:00 -0500
+tags: codeforces, #742
+---
+```
+
+```
+# [A: Domino Disaster](https://codeforces.com/contest/1567/problem/A)
+```
+
+```
+Alice has a grid with 2 rows and n columns. She fully covers the grid using n dominoes of size 1×2 — Alice may place them vertically or horizontally, and each cell should be covered by exactly one domino.
+
+Now, she decided to show one row of the grid to Bob. Help Bob and figure out what the other row of the grid looks like!
+
+Input
+The input consists of multiple test cases. The first line contains an integer t (1≤t≤5000) — the number of test cases. The description of the test cases follows.
+
+The first line of each test case contains an integer n (1≤n≤100) — the width of the grid.
+
+The second line of each test case contains a string s consisting of n characters, each of which is either L, R, U, or D, representing the left, right, top, or bottom half of a domino, respectively (see notes for better understanding). This string represents one of the rows of the grid.
+
+Additional constraint on the input: each input corresponds to at least one valid tiling.
+
+Output
+For each test case, output one string — the other row of the grid, using the same format as the input string. If there are multiple answers, print any.
+```
+
+## 한줄 요약
+
+
+
+1. 문자열 s가 들어오는데 그거 블럭 맞춰서 넣기 ("L", "R", "U", "D")
+
+
+
+## 처음생각
+
+1. 그냥 s들어오면 경우가 한정적이기에 U와 D만 구분해서 넣는다.
+
+
+
+## 풀이
+
+- S를 i=0부터 확인
+- L||R 경우, i++;res+="LR";
+- U||D 경우, res += s[i]=='U'?"D":"U";
+
+
+
+## time complexity
+
+- O(n)
+
+
+
+## code
+
+```c++
+#include<bits/stdc++.h>
+
+typedef long long ll;
+
+
+#define FAST ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#define PII pair<int,int>
+#define PIII pair<PII,int>
+#define FOR(a, b, c) for (int(a) = (b); (a) < (c); ++(a))
+#define FORN(a, b, c) for (int(a) = (b); (a) <= (c); ++(a))
+#define FORD(a, b, c) for (int(a) = (b); (a) >= (c); --(a))
+#define FORSQ(a, b, c) for (int(a) = (b); (a) * (a) <= (c); ++(a))
+#define FORC(a, b, c) for (char(a) = (b); (a) <= (c); ++(a))
+#define FOREACH(a, b) for (auto&(a) : (b))
+#define REP(i, n) FOR(i, 0, n)
+#define REPN(i, n) FORN(i, 1, n)
+#define SQR(x) ((ll)(x) * (x))
+#define RESET(a, b) memset(a, b, sizeof(a))
+#define fi first
+#define se second
+#define mp make_pair
+#define pb push_back
+#define ALL(v) v.begin(), v.end()
+#define ALLA(arr, sz) arr, arr + sz
+#define SIZE(v) (int)v.size()
+#define SORT(v) sort(ALL(v))
+#define REVERSE(v) reverse(ALL(v))
+#define SORTA(arr, sz) sort(ALLA(arr, sz))
+#define REVERSEA(arr, sz) reverse(ALLA(arr, sz))
+#define PERMUTE next_permutation
+#define TC(t) while (t--)
+
+#define INF 1e9
+#define MAX 1000001
+
+using namespace std;
+
+int t;
+int n;
+string s;
+int a[MAX];
+vector<int> v;
+
+int solve() {
+    string res = "";
+    REP(i, n){
+        if (s[i]=='U'||s[i]=='D'){
+            res += s[i]=='U' ? "D" : "U";
+        }else{
+            res += "LR";
+            i++;
+        }
+    }
+    cout<<res<<'\n';
+    return 0;
+}
+
+int main(){
+    FAST;
+    cin>>t;
+    TC(t){
+        cin>>n>>s;
+        solve();
+    }
+    return 0;
+}
+```
+
+
+
+```
+# [B: MEXor Mixup](https://codeforces.com/contest/1567/problem/B)
+```
+
+```
+Alice gave Bob two integers a and b (a>0 and b≥0). Being a curious boy, Bob wrote down an array of non-negative integers with MEX value of all elements equal to a and XOR value of all elements equal to b.
+
+What is the shortest possible length of the array Bob wrote?
+
+Recall that the MEX (Minimum EXcluded) of an array is the minimum non-negative integer that does not belong to the array and the XOR of an array is the bitwise XOR of all the elements of the array.
+
+Input
+The input consists of multiple test cases. The first line contains an integer t (1≤t≤5⋅104) — the number of test cases. The description of the test cases follows.
+
+The only line of each test case contains two integers a and b (1≤a≤3⋅105; 0≤b≤3⋅105) — the MEX and XOR of the array, respectively.
+
+Output
+For each test case, output one (positive) integer — the length of the shortest array with MEX a and XOR b. We can show that such an array always exists.
+```
+
+## 두줄 요약
+
+1. b는 배열 res 모든 원소를 xor한 값, a는 배열 res에 포함되지 않는 minimum positive integer
+2. 이때 배열 res 크기를 최소화할 때 res 사이즈 값을 구한다.
+
+
+
+## 처음 생각
+
+1. 약간 조졌다? MEX 값 잡기 어려웠음.
+2. 시간복잡도 생각하면 O(n)이 될까라는 생각도 함. -> O(n)은 직접 해보니까 TLE뜸.  한 15억정도 되는듯.
+
+
+
+## 풀이
+
+1. 규칙을 찾아야하는데 손으로 직접 xor(전체 배열 0~n까지 xor한 값) 해보면 (if a==9, res 배열에는 0~8까지 숫자가 들어있어야 한다. ) 
+
+| 숫자   | 0    | 1    | 2    | 3    | 4    | 5    | 6    | 7    | 8    |
+| ------ | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
+| 이진수 | 0    | 1    | 10   | 11   | 100  | 101  | 110  | 111  | 1000 |
+| xor    | 0    | 1    | 11   | 0    | 100  | 1    | 111  | 0    | 1000 |
+
+2. 위와 같은 표를 봤을 때 4가지 경우로 나눠 볼 수 있는데
+   1. a%4 == 0, 0
+   2. a%4 == 1, a-1
+   3. a%4 == 2, 1
+   4. a%4 == 3, a
+3. 위와 같이 xor 값을 O(1)로 해결할 수 있다. 그렇기에 주어진 xor 값이랑 목표로 하는 b값이랑 비교해야 한다.
+   1. if xor==b, return size (res를 xor한 값이 b이기에 추가적인 원소는 필요 없다.)
+   2. if xor^b==a, return size+2 (res에 다음 원소 a를 추가 못하니 2개 원소를 추가해 a를 만들어 준다.)
+   3. else. return size+1 (b를 만들기 위한 원소를 하나 추가한다.)
+
+
+
+## time complexity
+
+- O(1)
+
+
+
+## code
+
+```c++
+#include<bits/stdc++.h>
+
+typedef long long ll;
+
+
+#define FAST ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#define PII pair<int,int>
+#define PIII pair<PII,int>
+#define FOR(a, b, c) for (int(a) = (b); (a) < (c); ++(a))
+#define FORN(a, b, c) for (int(a) = (b); (a) <= (c); ++(a))
+#define FORD(a, b, c) for (int(a) = (b); (a) >= (c); --(a))
+#define FORSQ(a, b, c) for (int(a) = (b); (a) * (a) <= (c); ++(a))
+#define FORC(a, b, c) for (char(a) = (b); (a) <= (c); ++(a))
+#define FOREACH(a, b) for (auto&(a) : (b))
+#define REP(i, n) FOR(i, 0, n)
+#define REPN(i, n) FORN(i, 1, n)
+#define SQR(x) ((ll)(x) * (x))
+#define RESET(a, b) memset(a, b, sizeof(a))
+#define fi first
+#define se second
+#define mp make_pair
+#define pb push_back
+#define ALL(v) v.begin(), v.end()
+#define ALLA(arr, sz) arr, arr + sz
+#define SIZE(v) (int)v.size()
+#define SORT(v) sort(ALL(v))
+#define REVERSE(v) reverse(ALL(v))
+#define SORTA(arr, sz) sort(ALLA(arr, sz))
+#define REVERSEA(arr, sz) reverse(ALLA(arr, sz))
+#define PERMUTE next_permutation
+#define TC(t) while (t--)
+
+#define INF 1e9
+#define MAX 1000001
+
+using namespace std;
+
+int t;
+int a, b;
+
+int solve() {
+    int Xor;
+    if (a%4==0){
+        Xor = 0;
+    }else if (a%4==1){
+        Xor = a-1;
+    }else if (a%4==2){
+        Xor = 1;
+    }else{
+        Xor = a;
+    }
+    // cout<<a<<" "<<b<<endl;
+    // cout<<Xor<<endl;
+    if (Xor==b){
+        cout<<a<<'\n';
+    }else if((Xor^b)==a){
+        cout<<a+2<<'\n';
+    }else{
+        cout<<a+1<<'\n';
+    }
+    return 0;
+}
+
+int main(){
+    FAST;
+    cin>>t;
+    TC(t){
+        cin>>a>>b;
+        solve();
+    }
+    return 0;
+}
+```
+
+
+
+```
+# [C: Carrying Conundrum](https://codeforces.com/contest/1567/problem/C)
+```
+
+```
+Alice has just learned addition. However, she hasn't learned the concept of "carrying" fully — instead of carrying to the next column, she carries to the column two columns to the left.
+
+For example, the regular way to evaluate the sum 2039+2976 would be as shown:
+
+
+However, Alice evaluates it as shown:
+
+
+In particular, this is what she does:
+
+add 9 and 6 to make 15, and carry the 1 to the column two columns to the left, i. e. to the column "0 9";
+add 3 and 7 to make 10 and carry the 1 to the column two columns to the left, i. e. to the column "2 2";
+add 1, 0, and 9 to make 10 and carry the 1 to the column two columns to the left, i. e. to the column above the plus sign;
+add 1, 2 and 2 to make 5;
+add 1 to make 1.
+Thus, she ends up with the incorrect result of 15005.
+Alice comes up to Bob and says that she has added two numbers to get a result of n. However, Bob knows that Alice adds in her own way. Help Bob find the number of ordered pairs of positive integers such that when Alice adds them, she will get a result of n. Note that pairs (a,b) and (b,a) are considered different if a≠b.
+
+Input
+The input consists of multiple test cases. The first line contains an integer t (1≤t≤1000) — the number of test cases. The description of the test cases follows.
+
+The only line of each test case contains an integer n (2≤n≤109) — the number Alice shows Bob.
+
+Output
+For each test case, output one integer — the number of ordered pairs of positive integers such that when Alice adds them, she will get a result of n.
+```
+
+
+
+## 두줄 요약
+
+1. 올림을 못하는 엘리스가 있는데 2번째 자리에 1을 더해야하지만 엘리스 연산에 의해 한 칸씩 left해서 3번째 자리에 1을 더함.
+2. 숫자 n이 주어질 때 n을 만들 수 있는 엘리스 연산 조합들을 구하여라.
+
+
+
+## 처음 생각
+
+1. 홀수 짝수 구분해서 문제를 접근하면 되겠구나
+2. 근데 구현이 약간 빡세겠다..?
+
+
+
+## 풀이
+
+- 커뮤니티를 보다가 본 풀이법인데 (짝수 자리 수 조합) * (홀수 자리 수 조합)
+- 만약 한 영역이라도 0이 있다면 return (조합 - 1)
+- 아니라면 return (odd+1)*(even+1)-2
+  - odd, even 두 경우에서 0이 될 경우를 뺌. ( n+0,(n−1)+1,(n−2)+2,…,0+n ) * ( n+0,(n−1)+1,(n−2)+2,…,0+n )
+
+
+
+```c++
+#include<bits/stdc++.h>
+
+typedef long long ll;
+
+
+#define FAST ios::sync_with_stdio(0), cin.tie(0), cout.tie(0);
+#define PII pair<int,int>
+#define PIII pair<PII,int>
+#define FOR(a, b, c) for (int(a) = (b); (a) < (c); ++(a))
+#define FORN(a, b, c) for (int(a) = (b); (a) <= (c); ++(a))
+#define FORD(a, b, c) for (int(a) = (b); (a) >= (c); --(a))
+#define FORSQ(a, b, c) for (int(a) = (b); (a) * (a) <= (c); ++(a))
+#define FORC(a, b, c) for (char(a) = (b); (a) <= (c); ++(a))
+#define FOREACH(a, b) for (auto&(a) : (b))
+#define REP(i, n) FOR(i, 0, n)
+#define REPN(i, n) FORN(i, 1, n)
+#define SQR(x) ((ll)(x) * (x))
+#define RESET(a, b) memset(a, b, sizeof(a))
+#define fi first
+#define se second
+#define mp make_pair
+#define pb push_back
+#define ALL(v) v.begin(), v.end()
+#define ALLA(arr, sz) arr, arr + sz
+#define SIZE(v) (int)v.size()
+#define SORT(v) sort(ALL(v))
+#define REVERSE(v) reverse(ALL(v))
+#define SORTA(arr, sz) sort(ALLA(arr, sz))
+#define REVERSEA(arr, sz) reverse(ALLA(arr, sz))
+#define PERMUTE next_permutation
+#define TC(t) while (t--)
+
+#define INF 1e9
+#define MAX 1000001
+
+using namespace std;
+
+int t;
+string n;
+
+int solve() {
+    string sodd = "";
+    string seven = "";
+    int l = n.length();
+    int res;
+    REP(i, l){
+        if(i%2) sodd+=n[i];
+        else seven+=n[i];
+    }
+    if (sodd==""){
+        int even = stoi(seven);
+        res = even-1;
+    }else if(seven==""){
+        int odd = stoi(sodd);
+        res = odd-1;
+    }else{
+        int odd = stoi(sodd);
+        int even = stoi(seven);
+        if (odd==0){
+            res = even - 1;
+        }else if(even==0){
+            res = odd - 1;
+        }else{
+            res = (odd+1)*(even+1)-2;
+        }
+    }
+    cout<<res<<endl;
+    return 0;
+}
+
+int main(){
+    FAST;
+    cin>>t;
+    TC(t){
+        cin>>n;
+        solve();
+    }
+    return 0;
+}
+```
+
